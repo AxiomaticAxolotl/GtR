@@ -10,8 +10,9 @@ namespace GtR
     {
         private static readonly FontFamily boldFontFamily = new FontFamily("Neuzeit Grotesk Bold");
         private static readonly FontFamily regularFontFamily = new FontFamily("Neuzeit Grotesk");
+        private const int orderCardNameFontSize = (int)(16.0 * GraphicsUtilities.dpiFactor);
         private const int orderCardHeaderFontSize = (int)(18.5 * GraphicsUtilities.dpiFactor);
-        private const int orderCardTextFontSize = (int)(11 * GraphicsUtilities.dpiFactor);
+        private const int orderCardTextFontSize = (int)(10.5 * GraphicsUtilities.dpiFactor);
         private const int siteCardCostTextFontSize = (int)(13 * GraphicsUtilities.dpiFactor);
         
         private const float InfluenceImagePercentage = .13f;
@@ -125,7 +126,7 @@ namespace GtR
                 costImageRectangle.Width,
                 costImageRectangle.Height);
             PrintCardText(
-                $"+3 victory points for |the player with the most |{suit.ResourceName().ToUpper()} in his vault at |the end of the game.",
+                $"+3 victory points for |the player with the most |{suit.ResourceName().ToUpper()} in their vault at |the end of the game.",
                 cardImage,
                 fullRectangle.Bottom - ((int)(fullRectangle.Height * .35f)),
                 usableRectangle.Width,
@@ -412,7 +413,7 @@ namespace GtR
         {
             var graphics = cardImage.Graphics;
             var usableRectangle = cardImage.UsableRectangle;
-            var cardNameFont = new Font(boldFontFamily, orderCardHeaderFontSize, FontStyle.Bold, GraphicsUnit.Pixel);
+            var cardNameFont = new Font(boldFontFamily, orderCardNameFontSize, FontStyle.Bold, GraphicsUnit.Pixel);
             var fragments = name.ToUpper().Split(" ")
                .Select((word, index) => new TextFragment
                {
