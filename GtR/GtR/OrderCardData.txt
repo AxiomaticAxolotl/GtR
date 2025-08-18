@@ -51,4 +51,4 @@ Villa	Stone	If you use the ARCHITECT to put one stone into the construction of t
 Vomitorium	Concrete	Before performing THINKER action, you may discard all your cards to the pool.	Standard	True
 Wall	Concrete	Immune to LEGIONARY. |+1 VP for every two materials in your stockpile.	Standard	False
 Watch Post	Stone	You may use a CRAFTSMAN action to tear down one of your completed buildings. Add its foundation to your hand and its material to your stockpile.	Promo	True
-Watermill	Brick	At end of turn a in which you led or followed LABORER, you may use each of your ARCHITECT clients once.	Promo	False
+Watermill	Brick	At end of a turn in which you led or followed LABORER, you may use each of your ARCHITECT clients once.	Promo	False
