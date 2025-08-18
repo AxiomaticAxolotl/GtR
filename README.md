@@ -1,6 +1,6 @@
 # NOTE: This is a fork of https://github.com/ecm85/GtR 
 Changes in this fork:
-* Reverted back to the last commit pre web version commit so that it can be run locally
+* Reverted back to the last pre web version commit so that it can be run locally
 * More detailed images (don't remember where I got them...)
 * Line breaks, font size, card sizes have been adjusted to fit "US Game size" (2.2"x3.43" / 55.9x87.1mm)
 * Promo cards added
