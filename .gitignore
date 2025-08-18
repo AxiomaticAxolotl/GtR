@@ -350,3 +350,6 @@ MigrationBackup/
 .ionide/
 
 Releases
+
+# Newer VS config format I guess
+.vscode
