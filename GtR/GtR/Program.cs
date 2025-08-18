@@ -301,6 +301,8 @@ namespace GtR
                     return CardSet.Republic;
                 case "Imperium":
                     return CardSet.Imperium;
+                case "Promo":
+                    return CardSet.Promo;
                 default:
                     throw new InvalidOperationException($"Invalid card set encountered: {text}.");
             }
