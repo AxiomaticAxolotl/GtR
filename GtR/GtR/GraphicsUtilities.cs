@@ -18,6 +18,15 @@ namespace GtR
         public static readonly StringFormat HorizontalNearAlignment = new StringFormat { Alignment = StringAlignment.Near };
         public static readonly StringFormat HorizontalFarAlignment = new StringFormat { Alignment = StringAlignment.Far };
         public static readonly StringFormat VerticalText = new StringFormat { FormatFlags = StringFormatFlags.DirectionVertical };
+
+        //Measuring and drawing fragments both go through this format so that a fragment's measured width is exactly the
+        //advance width of its glyphs. The default format pads each measured string by an implementation-defined amount
+        //(sizeable on Windows GDI+, zero on libgdiplus) and drops trailing spaces, which left words either correctly
+        //spaced or jammed together depending on the platform. Word spacing is now added explicitly instead - see WordGap.
+        public static readonly StringFormat ExactTextMeasurement = new StringFormat(StringFormat.GenericTypographic)
+        {
+            FormatFlags = (StringFormat.GenericTypographic.FormatFlags | StringFormatFlags.MeasureTrailingSpaces) & ~StringFormatFlags.LineLimit
+        };
         public static readonly SolidBrush BlackBrush = new SolidBrush(Color.Black);
 
         private const float textOutlineWidth = .5f * dpiFactor;
@@ -163,28 +172,51 @@ namespace GtR
                 .ToList();
             var fragmentsGroupedByLine = GetFragmentsGroupedByLine(graphics, rectangle, measuredFragments).ToList();
             var totalHeight = fragmentsGroupedByLine.Sum(group => group.Max(measuredFragment => measuredFragment.Height));
-            var totalWidth = fragmentsGroupedByLine.Max(group => group.Sum(measuredFragment => measuredFragment.Width));
+            var totalWidth = fragmentsGroupedByLine.Max(group => LineWidth(graphics, group));
             var minX = rectangle.X + (rectangle.Width / 2 - totalWidth / 2);
             var minY = rectangle.Y + (centerVertically ? (rectangle.Height / 2 - totalHeight / 2) : 0);
             graphics.FillRectangle(new SolidBrush(Color.FromArgb(backgroundOpacity, Color.White)), new Rectangle(minX, minY, totalWidth, totalHeight));
             var currentY = minY;
             foreach(var fragmentGroup in fragmentsGroupedByLine)
             {
-                var groupWidth = fragmentGroup.Sum(fragment => fragment.Width);
+                var groupWidth = LineWidth(graphics, fragmentGroup);
                 var groupHeight = fragmentGroup.Max(fragment => fragment.Height);
                 var currentX = rectangle.X + (rectangle.Width / 2 - groupWidth / 2);
                 foreach(var fragment in fragmentGroup)
                 {
-                    graphics.DrawString(fragment.TextFragment.Text, fragment.TextFragment.Font, fragment.TextFragment.Brush, new Rectangle(currentX, currentY, rectangle.Width, rectangle.Height));
-                    currentX += fragment.Width;
+                    graphics.DrawString(fragment.TextFragment.Text, fragment.TextFragment.Font, fragment.TextFragment.Brush, new Rectangle(currentX, currentY, rectangle.Width, rectangle.Height), ExactTextMeasurement);
+                    currentX += fragment.Width + WordGap(graphics, fragment.TextFragment.Font);
                 }
                 currentY += groupHeight;
             }
         }
 
+        //The width a line of fragments occupies, including the gap that separates each fragment from the next one.
+        //The gap after the final fragment is not counted, so that the line centers on its visible ink.
+        private static int LineWidth(Graphics graphics, IEnumerable<MeasuredTextFragment> fragmentsOnLine)
+        {
+            var fragments = fragmentsOnLine.ToList();
+            return fragments.Sum(fragment => fragment.Width)
+                + fragments.Take(fragments.Count - 1).Sum(fragment => WordGap(graphics, fragment.TextFragment.Font));
+        }
+
+        //Fragments are laid out one word at a time, so the space that would normally separate two words has to be added
+        //back between them. A font's own space character is the natural width for that gap.
+        private static readonly IDictionary<string, int> wordGapsByFont = new Dictionary<string, int>();
+        private static int WordGap(Graphics graphics, Font font)
+        {
+            var key = $"{font.FontFamily.Name}|{font.Size}|{font.Style}";
+            if (!wordGapsByFont.TryGetValue(key, out var gap))
+            {
+                gap = (int)graphics.MeasureString(" ", font, 1000, ExactTextMeasurement).Width;
+                wordGapsByFont[key] = gap;
+            }
+            return gap;
+        }
+
         private static MeasuredTextFragment MeasureTextFragment(Graphics graphics, TextFragment textFragment, int maxWidth)
         {
-            var measurement = graphics.MeasureString(textFragment.Text, textFragment.Font, maxWidth);
+            var measurement = graphics.MeasureString(textFragment.Text, textFragment.Font, maxWidth, ExactTextMeasurement);
             return new MeasuredTextFragment((int)measurement.Width, (int)measurement.Height, textFragment);
         }
 
@@ -197,9 +229,13 @@ namespace GtR
                 var currentWidth = 0;
                 do
                 {
+                    if (tokens > 0)
+                        currentWidth += WordGap(graphics, remaining[tokens - 1].TextFragment.Font);
                     currentWidth += remaining[tokens].Width;
                     tokens++;
-                } while (tokens < remaining.Count && !remaining[tokens].TextFragment.ForcesNewline && currentWidth + remaining[tokens].Width <= rectangle.Width);
+                } while (tokens < remaining.Count
+                    && !remaining[tokens].TextFragment.ForcesNewline
+                    && currentWidth + WordGap(graphics, remaining[tokens - 1].TextFragment.Font) + remaining[tokens].Width <= rectangle.Width);
                 yield return remaining.Take(tokens).ToList();
                 remaining = remaining.Skip(tokens).ToList();
             }

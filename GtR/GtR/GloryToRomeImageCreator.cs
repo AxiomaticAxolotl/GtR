@@ -461,7 +461,11 @@ namespace GtR
                 iconImageWidth,
                 iconImageHeight);
 
-            var text = new string(roleName.ToUpper().ToCharArray().SelectMany(character => character == 'I' ? new[] { character, (char)0x2009 } : new[] { character }).ToArray());
+            //One character per line, broken explicitly. Relying on a one-character-wide rectangle to wrap the name
+            //instead leaves the break up to the platform, and libgdiplus hyphenates a word it breaks mid-word, which
+            //put a dash after every letter. Explicit breaks also center each letter, including a narrow 'I' that
+            //previously had to be padded with a thin space to stop it sharing a line with the letter after it.
+            var text = string.Join("\n", roleName.ToUpper().ToCharArray());
             var brush = BrushesByCardSuit[suit];
             var singleCharacterMeasurement = graphics.MeasureString("M", cardNameFont, new SizeF(usableRectangle.Width, usableRectangle.Height), GraphicsUtilities.HorizontalNearAlignment);
             var textBoxWidth = (int)singleCharacterMeasurement.Width;
