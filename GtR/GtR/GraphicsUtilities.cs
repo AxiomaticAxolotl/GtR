@@ -165,7 +165,8 @@ namespace GtR
             graphics.DrawString(text, font, brush, rectangle, stringFormat);
         }
 
-        public static void DrawFragmentsCentered(Graphics graphics, IList<TextFragment> fragments, Rectangle rectangle, int backgroundOpacity, bool centerVertically)
+        //Returns the size the laid-out text actually occupies, so callers can check it against the box they asked for.
+        public static Size DrawFragmentsCentered(Graphics graphics, IList<TextFragment> fragments, Rectangle rectangle, int backgroundOpacity, bool centerVertically)
         {
             var measuredFragments = fragments
                 .Select(fragment => MeasureTextFragment(graphics, fragment, rectangle.Width))
@@ -189,6 +190,7 @@ namespace GtR
                 }
                 currentY += groupHeight;
             }
+            return new Size(totalWidth, totalHeight);
         }
 
         //The width a line of fragments occupies, including the gap that separates each fragment from the next one.

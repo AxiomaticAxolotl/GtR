@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -265,7 +266,11 @@ namespace GtR
                     CardSuit = GetCardSuitFromMaterialText(tokens[1]),
                     CardText = tokens[2],
                     CardSet = GetCardSetFromText(tokens[3]),
-                    ImageIsRoughlyCentered = bool.Parse(tokens[4])
+                    ImageIsRoughlyCentered = bool.Parse(tokens[4]),
+                    //Optional sixth column: only the few cards whose text will not fit at the standard size carry one.
+                    CardTextFontSizeInPoints = tokens.Length > 5 && !string.IsNullOrWhiteSpace(tokens[5])
+                        ? float.Parse(tokens[5], CultureInfo.InvariantCulture)
+                        : (float?)null
                 })
                 .ToList();
         }

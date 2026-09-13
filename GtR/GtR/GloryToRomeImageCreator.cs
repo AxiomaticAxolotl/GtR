@@ -12,7 +12,7 @@ namespace GtR
         private static readonly FontFamily regularFontFamily = new FontFamily("Neuzeit Grotesk");
         private const int orderCardNameFontSize = (int)(16.0 * GraphicsUtilities.dpiFactor);
         private const int orderCardHeaderFontSize = (int)(18.5 * GraphicsUtilities.dpiFactor);
-        private const int orderCardTextFontSize = (int)(10.5 * GraphicsUtilities.dpiFactor);
+        private const float orderCardTextFontSizeInPoints = 13.5f;
         private const int siteCardCostTextFontSize = (int)(13 * GraphicsUtilities.dpiFactor);
         
         private const float InfluenceImagePercentage = .13f;
@@ -59,7 +59,8 @@ namespace GtR
                 usableRectangle.Bottom - bottomOfImage,
                 xOffset,
                 0,
-                brush);
+                brush,
+                FontSizeInPixels(orderCardTextFontSizeInPoints));
             return cardImage;
         }
 
@@ -91,7 +92,7 @@ namespace GtR
             var textRectangleHeight = usableRectangle.Bottom - (influenceImageSide + bottomOfImage);
             var top = bottomOfImage;
             var textXOffset = 0;
-            PrintCardText("LEAD |a role from your hand |or |THINK |and draw new cards", cardImage, top, textBoxWidth, textRectangleHeight, textXOffset, 200, GraphicsUtilities.BlackBrush);
+            PrintCardText("LEAD |a role from your hand |or |THINK |and draw new cards", cardImage, top, textBoxWidth, textRectangleHeight, textXOffset, 200, GraphicsUtilities.BlackBrush, FontSizeInPixels(orderCardTextFontSizeInPoints));
 
             return cardImage;
         }
@@ -133,7 +134,8 @@ namespace GtR
                 (int)(fullRectangle.Height * .25f),
                 0,
                 0,
-                GraphicsUtilities.BlackBrush);
+                GraphicsUtilities.BlackBrush,
+                FontSizeInPixels(orderCardTextFontSizeInPoints));
 
             var centerPoint = usableRectangle.X + usableRectangle.Width / 2;
 
@@ -348,8 +350,25 @@ namespace GtR
         private int CardTextWidth(CardImage cardImage) => (int)(cardImage.UsableRectangle.Width * (1 - (RoleIconPercentage + SetIndicatorPercentage)));
         private int RoleIconWidth(CardImage cardImage) => (int)(cardImage.UsableRectangle.Width * RoleIconPercentage);
 
-        private readonly Font CardTextFont = new Font(regularFontFamily, orderCardTextFontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-        private readonly Font BoldCardTextFont = new Font(boldFontFamily, orderCardTextFontSize, FontStyle.Bold, GraphicsUnit.Pixel);
+        private static int FontSizeInPixels(float sizeInPoints) => (int)(sizeInPoints * GraphicsUtilities.dpiFactor);
+
+        //Card text is normally drawn at one size, but a card whose text will not fit its box can ask for a smaller
+        //one, so the fonts are built on demand and kept per size rather than created once.
+        private readonly IDictionary<int, Font> cardTextFontsBySize = new Dictionary<int, Font>();
+        private readonly IDictionary<int, Font> boldCardTextFontsBySize = new Dictionary<int, Font>();
+
+        private Font CardTextFont(int sizeInPixels) => FontOfSize(cardTextFontsBySize, regularFontFamily, FontStyle.Regular, sizeInPixels);
+        private Font BoldCardTextFont(int sizeInPixels) => FontOfSize(boldCardTextFontsBySize, boldFontFamily, FontStyle.Bold, sizeInPixels);
+
+        private static Font FontOfSize(IDictionary<int, Font> fontsBySize, FontFamily fontFamily, FontStyle fontStyle, int sizeInPixels)
+        {
+            if (!fontsBySize.TryGetValue(sizeInPixels, out var font))
+            {
+                font = new Font(fontFamily, sizeInPixels, fontStyle, GraphicsUnit.Pixel);
+                fontsBySize[sizeInPixels] = font;
+            }
+            return font;
+        }
 
         public CardImage CreateOrderCardBack()
         {
@@ -576,23 +595,30 @@ namespace GtR
                 textRectangleHeight = usableRectangle.Bottom - (influenceImageSide + top);
             }
             var xOffset = RoleIconWidth(cardImage);
-            PrintCardText(orderCard.CardText, cardImage, top, textBoxWidth, textRectangleHeight, xOffset, 200, GraphicsUtilities.BlackBrush);
+            var fontSizeInPixels = FontSizeInPixels(orderCard.CardTextFontSizeInPoints ?? orderCardTextFontSizeInPoints);
+            PrintCardText(orderCard.CardText, cardImage, top, textBoxWidth, textRectangleHeight, xOffset, 200, GraphicsUtilities.BlackBrush, fontSizeInPixels);
         }
 
-        private void PrintCardText(string text, CardImage cardImage, int top, int textBoxWidth, int textRectangleHeight, int xOffset, int backgroundOpacity, Brush defaultBrush)
+        private void PrintCardText(string text, CardImage cardImage, int top, int textBoxWidth, int textRectangleHeight, int xOffset, int backgroundOpacity, Brush defaultBrush, int fontSizeInPixels)
         {
             var graphics = cardImage.Graphics;
             var usableRectangle = cardImage.UsableRectangle;
             var rectangle = new Rectangle(usableRectangle.X + xOffset, top, textBoxWidth, textRectangleHeight);
             var words = text.Split(new[] { " " }, StringSplitOptions.None);
             var fragments = words
-                .Select(word => GetFragmentForWord(word, defaultBrush))
+                .Select(word => GetFragmentForWord(word, defaultBrush, fontSizeInPixels))
                 .ToList();
 
-            GraphicsUtilities.DrawFragmentsCentered(graphics, fragments, rectangle, backgroundOpacity, true);
+            var textSize = GraphicsUtilities.DrawFragmentsCentered(graphics, fragments, rectangle, backgroundOpacity, true);
+            //The text is centered in its box and never clipped, so text that is too big silently runs over the card
+            //image above it and the influence icons below it. Say so rather than quietly producing an unusable card.
+            if (textSize.Height > textRectangleHeight || textSize.Width > textBoxWidth)
+                Console.WriteLine($"Warning: text on {cardImage.Name} does not fit its text box "
+                    + $"({textSize.Width}x{textSize.Height} pixels of text in a {textBoxWidth}x{textRectangleHeight} box). "
+                    + "Give the card a smaller CardTextFontSizeInPoints in OrderCardData.txt.");
         }
 
-        private TextFragment GetFragmentForWord(string word, Brush defaultBrush)
+        private TextFragment GetFragmentForWord(string word, Brush defaultBrush, int fontSizeInPixels)
         {
             var text = word;
             var forcesNewline = false;
@@ -607,7 +633,7 @@ namespace GtR
             return new TextFragment
             {
                 Text = AddFourPerEmSpaces($"{text}"),
-                Font = isSuitKeyword || isNonSuitKeyword ? BoldCardTextFont : CardTextFont,
+                Font = isSuitKeyword || isNonSuitKeyword ? BoldCardTextFont(fontSizeInPixels) : CardTextFont(fontSizeInPixels),
                 Brush = isSuitKeyword ? BrushesByCardSuit[SuitsByKeyword[matchingSuitKeyword]] : defaultBrush,
                 ForcesNewline = forcesNewline
             };
