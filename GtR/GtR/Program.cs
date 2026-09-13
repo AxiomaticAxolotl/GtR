@@ -22,7 +22,8 @@ namespace GtR
         private static readonly IDictionary<OSPlatform, string> RootDirectoryByPlatform = new Dictionary<OSPlatform, string>
         {
             [OSPlatform.Windows] = $"c:{Path.DirectorySeparatorChar}",
-            [OSPlatform.OSX] = $@"{Path.DirectorySeparatorChar}tmp"
+            [OSPlatform.OSX] = $@"{Path.DirectorySeparatorChar}tmp",
+            [OSPlatform.Linux] = $@"{Path.DirectorySeparatorChar}tmp"
         };
 
         public static void Main(string[] args)
