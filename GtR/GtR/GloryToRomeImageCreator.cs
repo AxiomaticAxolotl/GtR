@@ -296,21 +296,16 @@ namespace GtR
 
             var cardNameFont = new Font(boldFontFamily, orderCardHeaderFontSize, FontStyle.Bold, GraphicsUnit.Pixel);
             var costFont = new Font(regularFontFamily, siteCardCostTextFontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            var resourceNameText = AddFourPerEmSpaces(suit.ResourceName().ToUpper());
-            var outOfTownSiteText = AddFourPerEmSpaces("out of town site");
-            var maxTextBoxWidth = usableRectangle.Width;
-            var initialRectangle = new Rectangle(usableRectangle.X, usableRectangle.Y, maxTextBoxWidth, usableRectangle.Height);
-            var resourceNameTextMeasurement = graphics.MeasureString(outOfTownSiteText, cardNameFont, new SizeF(initialRectangle.Width, initialRectangle.Height), GraphicsUtilities.HorizontalCenterAlignment);
-            var outOfTownSiteTextMeasurement = graphics.MeasureString(outOfTownSiteText, cardNameFont, new SizeF(initialRectangle.Width, initialRectangle.Height), GraphicsUtilities.HorizontalCenterAlignment);
-            var resourceNameTextHeight = (int)Math.Ceiling(resourceNameTextMeasurement.Height);
-            var outOfTownSiteTextHeight = (int)Math.Ceiling(outOfTownSiteTextMeasurement.Height);
-            var textHeight = resourceNameTextHeight + outOfTownSiteTextHeight;
-            var yOffset = usableRectangle.Height/2 - textHeight/2;
-            var resourceNameTextRectangle = new Rectangle(usableRectangle.X, usableRectangle.Y + yOffset - resourceNameTextHeight, maxTextBoxWidth, textHeight);
-            var outOfTownSiteTextRectangle = new Rectangle(usableRectangle.X, usableRectangle.Y + yOffset, maxTextBoxWidth, textHeight);
-            //graphics.FillRectangle(new SolidBrush(Color.Blue), textRectangle);
-            GraphicsUtilities.DrawString(graphics, resourceNameText, cardNameFont, GraphicsUtilities.BlackBrush, resourceNameTextRectangle, GraphicsUtilities.HorizontalCenterAlignment);
-            GraphicsUtilities.DrawString(graphics, outOfTownSiteText, costFont, GraphicsUtilities.BlackBrush, outOfTownSiteTextRectangle, GraphicsUtilities.HorizontalCenterAlignment);
+            var lines = new[]
+            {
+                (Text: AddFourPerEmSpaces(suit.ResourceName().ToUpper()), Font: cardNameFont),
+                (Text: AddFourPerEmSpaces("out of town site"), Font: costFont)
+            };
+            var boxSize = TextBoxOnStripesSize(graphics, lines);
+            var boxLocation = new Point(
+                usableRectangle.X + usableRectangle.Width / 2 - boxSize.Width / 2,
+                usableRectangle.Y + usableRectangle.Height / 2 - boxSize.Height / 2);
+            DrawTextBoxOnStripes(graphics, lines, new Rectangle(boxLocation, boxSize));
 
             return cardImage;
         }
@@ -335,16 +330,43 @@ namespace GtR
             var material = suit.Cost() > 1 ? "materials" : "material";
             var costText = AddFourPerEmSpaces($"foundation +{suit.Cost()} {material}");
             var costFont = new Font(regularFontFamily, siteCardCostTextFontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            var costTextMeasurement = graphics.MeasureString(costText, costFont, fullRectangle.Width);
-            var costTextWidth = (int)Math.Ceiling(costTextMeasurement.Width);
-            var costTextHeight = (int)costTextMeasurement.Height;
-            var costTextRectangle = new Rectangle(
-                fullRectangle.Width / 2 - costTextWidth / 2,
-                (int)(costRectangle.Top + costRectangle.Height * .1f),
-                costTextWidth,
-                costTextHeight);
-            graphics.FillRectangle(new SolidBrush(Color.White), costTextRectangle);
-            GraphicsUtilities.DrawString(graphics, costText, costFont, GraphicsUtilities.BlackBrush, costTextRectangle);
+            var lines = new[] { (Text: costText, Font: costFont) };
+            var boxSize = TextBoxOnStripesSize(graphics, lines);
+            var boxLocation = new Point(
+                fullRectangle.X + fullRectangle.Width / 2 - boxSize.Width / 2,
+                (int)(costRectangle.Top + costRectangle.Height * .1f));
+            DrawTextBoxOnStripes(graphics, lines, new Rectangle(boxLocation, boxSize));
+        }
+
+        //Text on a site card's stripes sits on a white box so it can be read against them. The box is padded so the
+        //first and last letters do not touch its edges.
+        private static Size TextBoxOnStripesSize(Graphics graphics, IList<(string Text, Font Font)> lines)
+        {
+            var lineSizes = lines.Select(line => graphics.MeasureString(line.Text, line.Font)).ToList();
+            var padding = TextBoxOnStripesPadding(lines);
+            return new Size(
+                (int)Math.Ceiling(lineSizes.Max(size => size.Width)) + 2 * padding.Width,
+                lineSizes.Sum(size => (int)Math.Ceiling(size.Height)) + 2 * padding.Height);
+        }
+
+        private static void DrawTextBoxOnStripes(Graphics graphics, IList<(string Text, Font Font)> lines, Rectangle box)
+        {
+            graphics.FillRectangle(Brushes.White, box);
+            var padding = TextBoxOnStripesPadding(lines);
+            var y = box.Y + padding.Height;
+            foreach (var line in lines)
+            {
+                var lineHeight = (int)Math.Ceiling(graphics.MeasureString(line.Text, line.Font).Height);
+                var lineRectangle = new Rectangle(box.X, y, box.Width, lineHeight);
+                GraphicsUtilities.DrawString(graphics, line.Text, line.Font, GraphicsUtilities.BlackBrush, lineRectangle, GraphicsUtilities.HorizontalCenterAlignment);
+                y += lineHeight;
+            }
+        }
+
+        private static Size TextBoxOnStripesPadding(IList<(string Text, Font Font)> lines)
+        {
+            var fontSize = lines.Max(line => line.Font.Size);
+            return new Size((int)(fontSize * .5f), (int)(fontSize * .15f));
         }
 
         private int CardTextWidth(CardImage cardImage) => (int)(cardImage.UsableRectangle.Width * (1 - (RoleIconPercentage + SetIndicatorPercentage)));
