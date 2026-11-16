@@ -35,14 +35,14 @@ b, strong { font-weight: 700; }
 .panel { position: relative; width: var(--panel); height: var(--panel); padding: var(--pad); overflow: hidden; }
 
 .mark { position: absolute; background: #000; }
-.mark.h { height: var(--hair); width: 0.18in; }
-.mark.v { width: var(--hair); height: 0.18in; }
-.fold { position: absolute; width: 0; height: 0.18in; border-left: var(--hair) dashed #000; }
-.tick { position: absolute; width: var(--hair); height: 0.05in; background: #000; }
+.mark.h { height: var(--hair); width: 0.18in; margin-top: calc(var(--hair) / -2); }
+.mark.v { width: var(--hair); height: 0.18in; margin-left: calc(var(--hair) / -2); }
+.fold { position: absolute; width: 0; height: 0.18in; border-left: var(--hair) dashed #000; margin-left: calc(var(--hair) / -2); }
+.tick { position: absolute; width: var(--hair); height: 0.05in; background: #000; margin-left: calc(var(--hair) / -2); }
 
 .howto {
   position: absolute; left: 0; right: 0; text-align: center;
-  top: calc((8.5in - var(--panel)) / 2 - 0.95in);
+  top: calc((8.5in - var(--panel)) / 2 - 1.1in);
   font-size: 8pt; line-height: 11pt;
 }
 .howto b { letter-spacing: 0.08em; }
@@ -127,7 +127,8 @@ ol > li::marker { font-weight: 700; }
   <div class="howto">
     <b>GLORY TO ROME POCKET RULES</b> &nbsp;·&nbsp; sheet 1 of 2 (outside)<br>
     Print both sheets on one page at 100% / actual size, double-sided, flipping on the <b>short edge</b>.<br>
-    Trim at the corner marks. With this side facing you, fold the cover panel <b>back</b> and panel 5 <b>forward</b> at the ticks.
+    Trim at the corner marks. With this side facing you, fold the cover panel <b>back</b> and panel 5 <b>forward</b> at the ticks.<br>
+    The marks are on this side only, so a small shift between the two sides doesn’t matter.
     <svg width="1.5in" height="0.3in" viewBox="0 0 150 30" fill="none" stroke="#000" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
       <polyline points="8,24 52,6 96,24 140,6"/>
       <g font-family="Neuzeit, sans-serif" font-size="6.5" fill="#000" stroke="none" text-anchor="middle">
@@ -211,7 +212,7 @@ ol > li::marker { font-weight: 700; }
      Panel 4 is the back face once folded, so it holds the role reference.
      ===================================================================== -->
 <section class="sheet" id="inside">
-  <div class="strip">
+  <div class="strip" id="inside-strip">
     <!-- ---------------- panel 2 ---------------- -->
     <div class="panel">
       <h2>Setup</h2>
@@ -318,19 +319,19 @@ ol > li::marker { font-weight: 700; }
       <div class="folio">4</div>
     </div>
 
-    <i class="tick" style="left: var(--panel); top: 0"></i>
-    <i class="tick" style="left: var(--panel); bottom: 0"></i>
-    <i class="tick" style="left: calc(2 * var(--panel)); top: 0"></i>
-    <i class="tick" style="left: calc(2 * var(--panel)); bottom: 0"></i>
   </div>
   <div class="sidename">Inside &nbsp;·&nbsp; 2 &nbsp;|&nbsp; 3 &nbsp;|&nbsp; 4</div>
 </section>
 
 <script>
-// Corner trim marks and outside fold marks, placed from the strip's real box so they track --panel.
-for (const sheet of document.querySelectorAll('.sheet')) {
-  const s = sheet.querySelector('.strip');
-  const x0 = s.offsetLeft, y0 = s.offsetTop, w = s.offsetWidth, h = s.offsetHeight;
+// Trim and fold marks go on the outside sheet only. Home duplex printers rarely register the
+// two sides to better than a millimetre or two, so marks on both sides would disagree; with
+// one set, the sheet is cut and folded true to the outside and the inside just sits slightly
+// off-centre within its margins.
+{
+  const sheet = document.getElementById('outside');
+  const a = sheet.getBoundingClientRect(), b = sheet.querySelector('.strip').getBoundingClientRect();
+  const x0 = b.left - a.left, y0 = b.top - a.top, w = b.width, h = b.height;
   const gap = 0.06 * 96, len = 0.18 * 96;
   const add = (cls, left, top) => {
     const m = document.createElement('i');
