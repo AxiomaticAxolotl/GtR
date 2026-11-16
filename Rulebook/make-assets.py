@@ -130,6 +130,6 @@ def eagle(path, scale):
 os.makedirs(OUT, exist_ok=True)
 for role in ['Laborer', 'Craftsman', 'Architect', 'Legionary', 'Patron', 'Merchant']:
     line_art(os.path.join(SRC, 'RoleIcons', role + '.png'), 4, False).save(os.path.join(OUT, role + '.png'), optimize=True)
-for card_set in ['Republic', 'Imperium']:
+for card_set in ['Republic', 'Imperium', 'Promo']:
     from_alpha(os.path.join(SRC, 'Misc', card_set + '.png'), 8).save(os.path.join(OUT, card_set + '.png'), optimize=True)
 eagle(os.path.join(SRC, 'Misc', 'GloryToRome.png'), 4).save(os.path.join(OUT, 'Eagle.png'), optimize=True)
