@@ -83,15 +83,16 @@ ol > li::marker { font-weight: 700; }
 .note p:last-child { margin-bottom: 0; }
 
 /* ---------- cover ---------- */
-.cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 0.27in; }
+.cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 0.24in; }
 .cover img { width: 2.62in; display: block; }
 .cover .kicker {
   margin-top: 7pt; font-size: 10pt; line-height: 11pt; font-weight: 700; letter-spacing: 0.42em; padding-left: 0.42em;
 }
 .cover .meta { margin-top: 4pt; font-size: 7.1pt; letter-spacing: 0.14em; text-transform: uppercase; }
 .cover .rule { width: 2.62in; margin-top: 6pt; border-top: 1.3pt solid #000; height: 3.4pt; border-bottom: 0.5pt solid #000; }
-.cover .pitch { margin-top: 8pt; width: 2.62in; font-size: 7.8pt; line-height: 10pt; text-wrap: balance; }
-.cover .credit { position: absolute; bottom: 0.12in; left: 0; right: 0; font-size: 5.8pt; line-height: 7pt; letter-spacing: 0.04em; }
+.cover .call { margin: 8pt 0 0; font-size: 8.4pt; line-height: 10pt; font-weight: 700; letter-spacing: 0.03em; }
+.cover .pitch { margin-top: 3.5pt; width: 2.62in; font-size: 7.8pt; line-height: 10pt; text-wrap: balance; }
+.cover .credit { position: absolute; bottom: 0.12in; left: 0; right: 0; font-size: 5.4pt; line-height: 7pt; letter-spacing: 0.04em; }
 
 /* ---------- camp diagram ---------- */
 .camp { display: grid; grid-template-columns: 1.02in 1fr; column-gap: 7pt; align-items: start; margin-top: 2pt; }
@@ -163,7 +164,7 @@ ol > li::marker { font-weight: 700; }
         <li>the last card is drawn from the deck;</li>
         <li>the in-town sites of all six materials have run out;</li>
         <li>a Catacomb is completed; or</li>
-        <li>a completed Forum’s condition is met — its owner wins outright.</li>
+        <li>a completed Forum or Forum Romanum meets its condition — its owner wins outright.</li>
       </ul>
       <h2 style="margin-top: 7pt">Scoring</h2>
       <ul>
@@ -176,7 +177,8 @@ ol > li::marker { font-weight: 700; }
       <p>Most VP wins. Ties go to the tied player with the most cards in hand.</p>
       <div class="note">
         <p><b>Easy to forget.</b> Every action is optional. There is no maximum hand size — 5 is only
-          how far you refill. Clients and vault cards are capped by influence; the stockpile isn’t.</p>
+          how far you refill. Clients and vault cards are capped by influence; the stockpile isn’t.
+          Nobody may look at cards in a vault, not even its owner.</p>
       </div>
       <div class="folio">6</div>
     </div>
@@ -187,11 +189,12 @@ ol > li::marker { font-weight: 700; }
       <div class="kicker">POCKET RULES</div>
       <div class="meta">2–5 players &nbsp;·&nbsp; about an hour</div>
       <div class="rule"></div>
-      <p class="pitch">Rome has burned, and there is a fortune to be made rebuilding it.
-        Every order card can be five things: a <b>role</b> to play, a <b>building</b> to raise,
-        a <b>material</b> to build with, a <b>client</b> to put to work, or <b>loot</b> for your vault.
-        Finish with the most victory points.</p>
-      <div class="credit">UNOFFICIAL FAN-MADE SUMMARY &nbsp;·&nbsp; GLORY TO ROME IS A GAME BY CARL CHUDYK</div>
+      <!-- The two intro paragraphs are quoted verbatim from the official Black Box rulebook. -->
+      <p class="call">Citizens of Rome! Caesar demands ACTION!</p>
+      <p class="pitch">64 AD: Rome is in turmoil – the city has been devastated by fire. Emperor Nero is racing
+        back from Antium to start rebuilding Structures lost to the flames. Caesar expects your aid in his
+        historic effort to restore Glory To Rome.</p>
+      <div class="credit">UNOFFICIAL FAN-MADE SUMMARY<br>A GAME BY CARL CHUDYK &nbsp;|&nbsp; CAMBRIDGE GAMES FACTORY</div>
     </div>
 
     <i class="tick" style="left: var(--panel); top: 0"></i>
@@ -212,12 +215,13 @@ ol > li::marker { font-weight: 700; }
     <div class="panel">
       <h2>Setup</h2>
       <ol>
-        <li>Give each player a camp. Set the Jacks and the merchant bonus cards within reach.</li>
+        <li>Give each player a camp. Set out the Jacks and merchant bonuses.</li>
         <li>Sort the sites by material. For each material, stack one in-town site per player on top of the
           rest, flipped to their out-of-town side.</li>
-        <li>Shuffle the order cards into a deck. Each player takes 4 of them and 1 Jack.</li>
-        <li>Each player turns one card from the deck into the <b>pool</b> in the middle of the table.
-          Whoever turned the name that comes first alphabetically takes the Leader card.</li>
+        <li>Play the Republic or the Imperium version, never both: box up the other version’s marked cards.
+          Shuffle the order cards and deal each player 5 (Imperium: 4 and a Jack).</li>
+        <li>Deal one card per player face up into the <b>pool</b> in the middle of the table.
+          Whoever’s card comes first alphabetically takes the Leader card.</li>
       </ol>
       <h2 style="margin-top: 6pt">Your Camp</h2>
       <div class="camp">
@@ -236,10 +240,10 @@ ol > li::marker { font-weight: 700; }
           </g>
         </svg>
         <div>
-          <div class="row"><b>Influence</b> (top): sites of buildings you have completed. You start with 2; each site adds its value.</div>
+          <div class="row"><b>Influence</b> (top): sites of your completed buildings. You start with 2; each site adds its value.</div>
           <div class="row"><b>Clientele</b> (left): hired clients. Limit = influence.</div>
           <div class="row"><b>Vault</b> (right): face-down loot, scored at game end. Limit = influence.</div>
-          <div class="row"><b>Stockpile</b> (bottom): materials to build with. No limit.</div>
+          <div class="row"><b>Stockpile</b> (bottom): building materials. No limit.</div>
         </div>
       </div>
       <div class="folio">2</div>
@@ -265,7 +269,7 @@ ol > li::marker { font-weight: 700; }
         Pass the Leader card to the left.</p>
       <div class="note">
         <p><b>Wild cards.</b> A <b>Jack</b> can be played as any role. So can a <b>petition</b>:
-          three order cards that share a role, played together.</p>
+          two order cards that share a role, played together (Imperium: three).</p>
       </div>
       <div class="folio">3</div>
     </div>
