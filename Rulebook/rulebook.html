@@ -70,6 +70,7 @@ ul { list-style: none; }
 ul > li { position: relative; }
 ul > li::before { content: ""; position: absolute; left: -7pt; top: 3.2pt; width: 2.6pt; height: 2.6pt; background: #000; }
 ol > li::marker { font-weight: 700; }
+img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }  /* sized to stay inside the line box */
 .folio {
   position: absolute; right: var(--pad); bottom: 0.1in;
   width: 10pt; height: 10pt; border: 0.7pt solid #000; border-radius: 50%;
@@ -220,8 +221,9 @@ ol > li::marker { font-weight: 700; }
         <li>Give each player a camp. Set out the Jacks and merchant bonuses.</li>
         <li>Sort the sites by material. For each material, stack one in-town site per player on top of the
           rest, flipped to their out-of-town side.</li>
-        <li>Play the Republic or the Imperium version, never both: box up the other version’s marked cards.
-          Shuffle the order cards and deal each player 5 (Imperium: 4 and a Jack).</li>
+        <li>Play the Republic&nbsp;<img class="set" src="assets/Republic.png" alt="(laurel icon)"> or the
+          Imperium&nbsp;<img class="set" src="assets/Imperium.png" alt="(lightning icon)"> version, never both: box up the
+          other version’s marked cards. Shuffle the order cards and deal each player 5 (Imperium: 4 and a Jack).</li>
         <li>Deal one card per player face up to the <b>pool</b> in mid-table.
           Whoever’s card is first alphabetically takes the Leader card.</li>
       </ol>

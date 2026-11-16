@@ -2,7 +2,7 @@
 
     python3 make-assets.py        (needs Pillow)
 
-Role icons become solid black silhouettes, and the eagle logo is redrawn as it looks on
+Role and card set icons become solid black silhouettes, and the eagle logo is redrawn as it looks on
 the box: solid black, with a grey banner. Output goes to assets/ as PNGs with transparency.
 """
 import os
@@ -29,6 +29,17 @@ def line_art(path, scale, outline=False):
     ink = ink.filter(ImageFilter.GaussianBlur(scale * 0.5)).point(lambda v: 255 if v > 127 else 0)
     black = Image.new('L', im.size, 0)
     return Image.merge('LA', (black, ink))
+
+
+def from_alpha(path, scale):
+    """The card set icons are white shapes on transparency (they sit on dark card art),
+    so their shape is the alpha channel: redraw it in black with smoothed edges."""
+    alpha = Image.open(path).convert('RGBA').split()[3]
+    alpha = alpha.resize((alpha.width * scale, alpha.height * scale), Image.BICUBIC)
+    alpha = alpha.filter(ImageFilter.GaussianBlur(scale * 0.4)).point(lambda v: 255 if v > 127 else 0)
+    alpha = alpha.filter(ImageFilter.GaussianBlur(0.8))
+    box = alpha.getbbox()                       # trim the empty border so it sits tight in a line of text
+    return Image.merge('LA', (Image.new('L', alpha.size, 0), alpha)).crop(box)
 
 
 BANNER_TONE = 0x58  # the box's red banner, as the grey it prints at
@@ -119,4 +130,6 @@ def eagle(path, scale):
 os.makedirs(OUT, exist_ok=True)
 for role in ['Laborer', 'Craftsman', 'Architect', 'Legionary', 'Patron', 'Merchant']:
     line_art(os.path.join(SRC, 'RoleIcons', role + '.png'), 4, False).save(os.path.join(OUT, role + '.png'), optimize=True)
+for card_set in ['Republic', 'Imperium']:
+    from_alpha(os.path.join(SRC, 'Misc', card_set + '.png'), 8).save(os.path.join(OUT, card_set + '.png'), optimize=True)
 eagle(os.path.join(SRC, 'Misc', 'GloryToRome.png'), 4).save(os.path.join(OUT, 'Eagle.png'), optimize=True)
