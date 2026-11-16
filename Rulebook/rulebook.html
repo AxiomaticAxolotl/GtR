@@ -37,15 +37,15 @@ b, strong { font-weight: 700; }
 .mark { position: absolute; background: #000; }
 .mark.h { height: var(--hair); width: 0.18in; margin-top: calc(var(--hair) / -2); }
 .mark.v { width: var(--hair); height: 0.18in; margin-left: calc(var(--hair) / -2); }
-.fold { position: absolute; width: 0; height: 0.18in; border-left: var(--hair) dashed #000; margin-left: calc(var(--hair) / -2); }
-.tick { position: absolute; width: var(--hair); height: 0.05in; background: #000; margin-left: calc(var(--hair) / -2); }
+.fold { position: absolute; width: 0; border-left: var(--hair) dashed #000; margin-left: calc(var(--hair) / -2); }
 
 .howto {
-  position: absolute; left: 0; right: 0; text-align: center;
-  top: calc((8.5in - var(--panel)) / 2 - 1.1in);
+  position: absolute; left: 50%; width: 2.9in; margin-left: -1.45in; text-align: center;
+  bottom: calc((8.5in + var(--panel)) / 2 + 0.28in);
   font-size: 8pt; line-height: 11pt;
 }
-.howto b { letter-spacing: 0.08em; }
+.howto .steps { display: block; margin-top: 4pt; text-wrap: balance; }
+.howto > b { letter-spacing: 0.08em; }
 .howto svg { display: block; margin: 0.06in auto 0; }
 .sidename {
   position: absolute; left: 0; right: 0; text-align: center;
@@ -126,10 +126,10 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
      ===================================================================== -->
 <section class="sheet" id="outside">
   <div class="howto">
-    <b>GLORY TO ROME POCKET RULES</b> &nbsp;·&nbsp; sheet 1 of 2 (outside)<br>
-    Print both sheets on one page at 100% / actual size, double-sided, flipping on the <b>short edge</b>.<br>
-    Trim at the corner marks. With this side facing you, fold the cover panel <b>back</b> and panel 5 <b>forward</b> at the ticks.<br>
-    The marks are on this side only, so a small shift between the two sides doesn’t matter.
+    <b>GLORY TO ROME POCKET RULES</b><br>sheet 1 of 2 (outside)<br>
+    <span class="steps">Print both sheets on one page at 100% / actual size, double-sided, flipping on the <b>short edge</b>.
+    With this side facing you, fold along the dashed lines: the cover panel <b>back</b>, panel 5 <b>forward</b>.
+    Then trim at the corner marks. All marks are on this side only, so a small shift between the two sides doesn’t matter.</span>
     <svg width="1.5in" height="0.3in" viewBox="0 0 150 30" fill="none" stroke="#000" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
       <polyline points="8,24 52,6 96,24 140,6"/>
       <g font-family="Neuzeit, sans-serif" font-size="6.5" fill="#000" stroke="none" text-anchor="middle">
@@ -200,10 +200,6 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
       <div class="credit">UNOFFICIAL FAN-MADE SUMMARY<br>A GAME BY CARL CHUDYK &nbsp;|&nbsp; CAMBRIDGE GAMES FACTORY</div>
     </div>
 
-    <i class="tick" style="left: var(--panel); top: 0"></i>
-    <i class="tick" style="left: var(--panel); bottom: 0"></i>
-    <i class="tick" style="left: calc(2 * var(--panel)); top: 0"></i>
-    <i class="tick" style="left: calc(2 * var(--panel)); bottom: 0"></i>
   </div>
   <div class="sidename">Outside &nbsp;·&nbsp; 5 &nbsp;|&nbsp; 6 &nbsp;|&nbsp; cover</div>
 </section>
@@ -339,15 +335,17 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
   const add = (cls, left, top) => {
     const m = document.createElement('i');
     m.className = cls; m.style.left = left + 'px'; m.style.top = top + 'px';
-    sheet.appendChild(m);
+    return sheet.appendChild(m);
   };
   for (const x of [x0, x0 + w]) for (const y of [y0, y0 + h]) {
     add('mark h', x === x0 ? x - gap - len : x + gap, y);
     add('mark v', x, y === y0 ? y - gap - len : y + gap);
   }
+  // Fold lines run from just outside the trim to the paper's edge, so the sheet can be
+  // creased before it is cut. Nothing is printed on the folds inside the trim.
   for (const fx of [x0 + w / 3, x0 + 2 * w / 3]) {
-    add('fold', fx, y0 - gap - len);
-    add('fold', fx, y0 + h + gap);
+    add('fold', fx, 0).style.height = (y0 - gap) + 'px';
+    add('fold', fx, y0 + h + gap).style.height = (a.height - y0 - h - gap) + 'px';
   }
 }
 </script>
