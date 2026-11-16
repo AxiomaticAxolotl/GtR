@@ -129,7 +129,7 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
     <b>GLORY TO ROME POCKET RULES</b><br>sheet 1 of 2 (outside)<br>
     <span class="steps">Print both sheets on one page at 100% / actual size, double-sided, flipping on the <b>short edge</b>.
     With this side facing you, fold along the dashed lines: the cover panel <b>back</b>, panel 5 <b>forward</b>.
-    Then trim at the corner marks. All marks are on this side only, so a small shift between the two sides doesn’t matter.</span>
+    Then trim at the corner marks, which are on this side only: the two sides may print a millimetre or two apart.</span>
     <svg width="1.5in" height="0.3in" viewBox="0 0 150 30" fill="none" stroke="#000" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
       <polyline points="8,24 52,6 96,24 140,6"/>
       <g font-family="Neuzeit, sans-serif" font-size="6.5" fill="#000" stroke="none" text-anchor="middle">
@@ -323,12 +323,10 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
 </section>
 
 <script>
-// Trim and fold marks go on the outside sheet only. Home duplex printers rarely register the
-// two sides to better than a millimetre or two, so marks on both sides would disagree; with
-// one set, the sheet is cut and folded true to the outside and the inside just sits slightly
-// off-centre within its margins.
-{
-  const sheet = document.getElementById('outside');
+// Fold lines go on both sheets; trim marks go on the outside sheet only. Home duplex printers
+// rarely register the two sides to better than a millimetre or two, so the sheet is cut true
+// to the outside and the inside just sits slightly off-centre within its margins.
+for (const sheet of document.querySelectorAll('.sheet')) {
   const a = sheet.getBoundingClientRect(), b = sheet.querySelector('.strip').getBoundingClientRect();
   const x0 = b.left - a.left, y0 = b.top - a.top, w = b.width, h = b.height;
   const gap = 0.06 * 96, len = 0.18 * 96;
@@ -337,15 +335,16 @@ img.set { height: 8pt; width: auto; vertical-align: -1.9pt; margin-right: 1pt; }
     m.className = cls; m.style.left = left + 'px'; m.style.top = top + 'px';
     return sheet.appendChild(m);
   };
-  for (const x of [x0, x0 + w]) for (const y of [y0, y0 + h]) {
-    add('mark h', x === x0 ? x - gap - len : x + gap, y);
-    add('mark v', x, y === y0 ? y - gap - len : y + gap);
-  }
   // Fold lines run from just outside the trim to the paper's edge, so the sheet can be
   // creased before it is cut. Nothing is printed on the folds inside the trim.
   for (const fx of [x0 + w / 3, x0 + 2 * w / 3]) {
     add('fold', fx, 0).style.height = (y0 - gap) + 'px';
     add('fold', fx, y0 + h + gap).style.height = (a.height - y0 - h - gap) + 'px';
+  }
+  if (sheet.id !== 'outside') continue;
+  for (const x of [x0, x0 + w]) for (const y of [y0, y0 + h]) {
+    add('mark h', x === x0 ? x - gap - len : x + gap, y);
+    add('mark v', x, y === y0 ? y - gap - len : y + gap);
   }
 }
 </script>
