@@ -61,7 +61,7 @@ This guide will attempt to walk through the steps needed to generate files for G
   * Box: You can put a lot of effort into a great box. I didn't and just used a box from Stonemaier Realistic Resources I had lying around.
   * Rome Demands mat: This seemed even more useless to me than the reverse side of the player boards, so I ignored it.
   * Rules: They're available at https://cdn.1j1ju.com/medias/e2/0b/89-glory-to-rome-rulebook.pdf. I didn't bother printing them, but you can probably just do regular paper or something fancy if you feel up to it.
-    * A black and white pocket summary is in the Rulebook folder (GloryToRome-PocketRules.pdf). Print it double-sided on one Letter sheet, flipping on the short edge, then trim and Z-fold it to a 3.4" square that fits in the box with the cards.
+    * A greyscale pocket summary is in the Rulebook folder (GloryToRome-PocketRules.pdf). Print it double-sided on one Letter sheet, flipping on the short edge, then trim and Z-fold it to a 3.4" square that fits in the box with the cards.
   * Small Player Mat cards: These seemed like the least useful component in the box, so I skipped them entirely.
 
 Good luck and Glory to Rome!
