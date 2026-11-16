@@ -97,6 +97,7 @@ ol > li::marker { font-weight: 700; }
 /* ---------- camp diagram ---------- */
 .camp { display: grid; grid-template-columns: 1.02in 1fr; column-gap: 7pt; align-items: start; margin-top: 2pt; }
 .camp svg { width: 1.02in; height: auto; display: block; margin-top: 1pt; }
+.camp .cap { margin: 3pt 0 0; font-size: 5.8pt; line-height: 7pt; text-align: center; text-wrap: balance; }
 .camp dl { display: block; }
 .camp dt { font-weight: 700; display: inline; }
 .camp dd { display: inline; }
@@ -144,8 +145,8 @@ ol > li::marker { font-weight: 700; }
       <p><b class="run">Out of town.</b> Once a material’s in-town sites are gone, a foundation of that material goes on an
         out-of-town site and costs <b>two</b> actions instead of one.</p>
       <p><b class="run">Build.</b> Each further action adds one material that matches the site, tucked under the foundation:
-        from your hand (Craftsman) or your stockpile (Architect). A building needs as many materials as its value
-        — 1, 2 or 3. The foundation card doesn’t count.</p>
+        from your hand (Craftsman) or your stockpile (Architect). A building needs as many materials as its value:
+        1, 2 or 3. The foundation card doesn’t count.</p>
       <p><b class="run">Complete.</b> The moment the last material goes in, the building is finished. Its power applies
         from now on, and its site moves to your influence, raising your clientele and vault limits.</p>
       <div class="note">
@@ -164,19 +165,19 @@ ol > li::marker { font-weight: 700; }
         <li>the last card is drawn from the deck;</li>
         <li>the in-town sites of all six materials have run out;</li>
         <li>a Catacomb is completed; or</li>
-        <li>a completed Forum or Forum Romanum meets its condition — its owner wins outright.</li>
+        <li>a completed Forum or Forum Romanum meets its condition. Its owner wins outright.</li>
       </ul>
       <h2 style="margin-top: 7pt">Scoring</h2>
       <ul>
         <li><b>Influence:</b> 1 VP for each point of influence.</li>
-        <li><b>Vault:</b> each material is worth its value — 1, 2 or 3 VP.</li>
+        <li><b>Vault:</b> each material is worth its value: 1, 2 or 3 VP.</li>
         <li><b>Merchant bonus:</b> 3 VP per material to whoever has the most of it in their vault.
           Tied? Nobody gets it.</li>
         <li><b>Buildings:</b> any VP granted by your completed buildings.</li>
       </ul>
       <p>Most VP wins. Ties go to the tied player with the most cards in hand.</p>
       <div class="note">
-        <p><b>Easy to forget.</b> Every action is optional. There is no maximum hand size — 5 is only
+        <p><b>Easy to forget.</b> Every action is optional. There is no maximum hand size; 5 is only
           how far you refill. Clients and vault cards are capped by influence; the stockpile isn’t.
           Nobody may look at cards in a vault, not even its owner.</p>
       </div>
@@ -220,29 +221,32 @@ ol > li::marker { font-weight: 700; }
           rest, flipped to their out-of-town side.</li>
         <li>Play the Republic or the Imperium version, never both: box up the other version’s marked cards.
           Shuffle the order cards and deal each player 5 (Imperium: 4 and a Jack).</li>
-        <li>Deal one card per player face up into the <b>pool</b> in the middle of the table.
-          Whoever’s card comes first alphabetically takes the Leader card.</li>
+        <li>Deal one card per player face up to the <b>pool</b> in mid-table.
+          Whoever’s card is first alphabetically takes the Leader card.</li>
       </ol>
       <h2 style="margin-top: 6pt">Your Camp</h2>
       <div class="camp">
-        <svg viewBox="0 0 102 92" fill="none" stroke="#000">
-          <rect x="33" y="13" width="36" height="12" stroke-width="0.7"/>
-          <rect x="33" y="67" width="36" height="12" stroke-width="0.7"/>
-          <rect x="13" y="29" width="12" height="36" stroke-width="0.7"/>
-          <rect x="77" y="29" width="12" height="36" stroke-width="0.7" stroke-dasharray="2 1.4"/>
-          <rect x="21" y="21" width="60" height="52" fill="#fff" stroke-width="1.3"/>
-          <g font-family="Neuzeit, sans-serif" font-size="6.2" font-weight="700" fill="#000" stroke="none" text-anchor="middle" letter-spacing="0.5">
-            <text x="51" y="9">INFLUENCE</text>
-            <text x="51" y="89">STOCKPILE</text>
-            <text transform="translate(9 47) rotate(-90)">CLIENTELE</text>
-            <text transform="translate(93 47) rotate(90)">VAULT</text>
-            <text x="51" y="49.5" font-size="7.5" letter-spacing="1.2">CAMP</text>
-          </g>
-        </svg>
+        <div>
+          <svg viewBox="0 0 102 92" fill="none" stroke="#000">
+            <rect x="33" y="13" width="36" height="12" stroke-width="0.7"/>
+            <rect x="33" y="67" width="36" height="12" stroke-width="0.7"/>
+            <rect x="13" y="29" width="12" height="36" stroke-width="0.7"/>
+            <rect x="77" y="29" width="12" height="36" stroke-width="0.7" stroke-dasharray="2 1.4"/>
+            <rect x="21" y="21" width="60" height="52" fill="#fff" stroke-width="1.3"/>
+            <g font-family="Neuzeit, sans-serif" font-size="6.2" font-weight="700" fill="#000" stroke="none" text-anchor="middle" letter-spacing="0.5">
+              <text x="51" y="9">INFLUENCE</text>
+              <text x="51" y="89">STOCKPILE</text>
+              <text transform="translate(9 47) rotate(-90)">CLIENTELE</text>
+              <text transform="translate(93 47) rotate(90)">VAULT</text>
+              <text x="51" y="49.5" font-size="7.5" letter-spacing="1.2">CAMP</text>
+            </g>
+          </svg>
+          <p class="cap">Clientele and vault sides vary. Follow your board.</p>
+        </div>
         <div>
           <div class="row"><b>Influence</b> (top): sites of your completed buildings. You start with 2; each site adds its value.</div>
-          <div class="row"><b>Clientele</b> (left): hired clients. Limit = influence.</div>
-          <div class="row"><b>Vault</b> (right): face-down loot, scored at game end. Limit = influence.</div>
+          <div class="row"><b>Clientele</b>: hired clients. Limit = influence.</div>
+          <div class="row"><b>Vault</b>: face-down loot, scored at game end. Limit = influence.</div>
           <div class="row"><b>Stockpile</b> (bottom): building materials. No limit.</div>
         </div>
       </div>
